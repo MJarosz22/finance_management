@@ -39,6 +39,8 @@ def mBankFin(file):
         for row in csv_reader:
             date = row[0]
             name = row[1].strip()
+            if "marcin jarosz" in name.lower() or "natych" in name.lower():
+                continue
             amount = float(row[4].split(' ')[0].replace(',', '.'))
             currency = row[4].split(' ')[1]
             if currency != 'EUR':
@@ -50,7 +52,6 @@ def mBankFin(file):
                     category = dictionary[known_name]
             transaction = (date, name, amount, currency, category)
             transactions.append(transaction)
-            print(transaction)
         return transactions
 
 
@@ -63,6 +64,8 @@ def abnFin(file):
             date = row[2][0:4] + '-' + row[2][4:6] + '-' + row[2][6:8]
             amount = float(row[6].replace(',', '.'))
             name = row[8]
+            if "marcin jarosz" in name.lower() or "natych" in name.lower():
+                continue
             for x in range(9, len(row)):
                 name += ' ' + row[x]
             category = 'other'
@@ -71,7 +74,6 @@ def abnFin(file):
                     category = dictionary[known_name]
             transaction = (date, name, amount, currency, category)
             transactions.append(transaction)
-            print(transaction)
     return transactions
 
 
