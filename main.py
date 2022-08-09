@@ -2,8 +2,11 @@ import requests
 import csv
 import gspread
 import time
+import categoryLoader
 
-MONTH = 'july'
+
+#insert the month you want to update
+MONTH = 'june'
 
 
 class RealTimeCurrencyConverter():
@@ -20,9 +23,14 @@ class RealTimeCurrencyConverter():
 url = 'https://api.exchangerate-api.com/v4/latest/USD'
 converter = RealTimeCurrencyConverter(url)
 
-mbankFile = f"mbank-{MONTH}.csv"
-abnFile = f"abn-{MONTH}.csv"
+mbankFile = f"monthly-statements/{MONTH}/mbank-{MONTH}.csv"
+abnFile = f"monthly-statements/{MONTH}/abn-{MONTH}.csv"
 
+
+
+
+dictionary = categoryLoader.get_dictionary()
+known = categoryLoader.get_known()
 
 def mBankFin(file):
     transactions = []
@@ -37,6 +45,9 @@ def mBankFin(file):
                 amount = converter.convert(currency, 'EUR', amount)
                 currency == 'EUR'
             category = 'other'
+            for known_name in known:
+                if known_name in name.lower():
+                    category = dictionary[known_name]
             transaction = (date, name, amount, currency, category)
             transactions.append(transaction)
             print(transaction)
@@ -55,6 +66,9 @@ def abnFin(file):
             for x in range(9, len(row)):
                 name += ' ' + row[x]
             category = 'other'
+            for known_name in known:
+                if known_name in name.lower():
+                    category = dictionary[known_name]
             transaction = (date, name, amount, currency, category)
             transactions.append(transaction)
             print(transaction)
