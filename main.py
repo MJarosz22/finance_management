@@ -4,14 +4,13 @@ import gspread
 import time
 import categoryLoader
 
-
-#insert the month you want to update
-MONTH = 'june'
+# insert the month you want to update
+MONTH = 'august'
 
 
 class RealTimeCurrencyConverter():
-    def __init__(self,url):
-        self.data= requests.get(url).json()
+    def __init__(self, url):
+        self.data = requests.get(url).json()
         self.currencies = self.data['rates']
 
     def convert(self, from_currency, to_currency, amount):
@@ -20,17 +19,16 @@ class RealTimeCurrencyConverter():
         amount = round(amount * self.currencies[to_currency], 2)
         return amount
 
+
 url = 'https://api.exchangerate-api.com/v4/latest/USD'
 converter = RealTimeCurrencyConverter(url)
 
 mbankFile = f"monthly-statements/{MONTH}/mbank-{MONTH}.csv"
 abnFile = f"monthly-statements/{MONTH}/abn-{MONTH}.csv"
 
-
-
-
 dictionary = categoryLoader.get_dictionary()
 known = categoryLoader.get_known()
+
 
 def mBankFin(file):
     transactions = []
@@ -64,10 +62,10 @@ def abnFin(file):
             date = row[2][0:4] + '-' + row[2][4:6] + '-' + row[2][6:8]
             amount = float(row[6].replace(',', '.'))
             name = row[8]
-            if "marcin jarosz" in name.lower() or "natych" in name.lower():
-                continue
             for x in range(9, len(row)):
                 name += ' ' + row[x]
+            if "marcin jarosz" in name.lower() or "natych" in name.lower():
+                continue
             category = 'other'
             for known_name in known:
                 if known_name in name.lower():
@@ -86,9 +84,9 @@ rowsMbank = mBankFin(mbankFile)
 rowsAbn = abnFin(abnFile)
 abnFin(abnFile)
 for row in rowsMbank:
-    wks.insert_row([row[0], row[1], row[4], row[2]], 8)
+    wks.insert_row([row[0], row[1], row[4], row[2]], 6)
     time.sleep(2)
 
 for row in rowsAbn:
-    wks.insert_row([row[0], row[1], row[4], row[2]], 8)
+    wks.insert_row([row[0], row[1], row[4], row[2]], 6)
     time.sleep(2)
